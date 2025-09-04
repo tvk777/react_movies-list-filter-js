@@ -5,18 +5,20 @@ import './App.scss';
 import { MoviesList } from './components/MoviesList';
 import moviesFromServer from './api/movies.json';
 
+const normalize = s => s.toLowerCase();
+
 const getFilteredMovies = (movies, query) => {
-  const value = query.trim().toLowerCase();
-  let filteredMovies = [...movies];
+  const normalizedQuery = normalize(query.trim());
 
-  if (value) {
-    filteredMovies = filteredMovies.filter(movie => {
-      const title = movie.title.toLowerCase();
-      const description = movie.description.toLowerCase();
-
-      return title.includes(value) || description.includes(value);
-    });
+  if (!normalizedQuery) {
+    return movies;
   }
+
+  const filteredMovies = movies.filter(
+    movie =>
+      normalize(movie.title).includes(normalizedQuery) ||
+      normalize(movie.description).includes(normalizedQuery),
+  );
 
   return filteredMovies;
 };
@@ -24,7 +26,7 @@ const getFilteredMovies = (movies, query) => {
 export const App = () => {
   const [query, setQuery] = useState('');
 
-  const handleChange = e => setQuery(e.target.value);
+  const handleChange = event => setQuery(event.target.value);
 
   const movies = getFilteredMovies(moviesFromServer, query);
 
